@@ -2,8 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStories, getStory, WORKFLOW } from "@/lib/stories";
-import { VerificationRecord } from "@/components/VerificationRecord";
+import { ImageSlot, StatusTag } from "@/components/blocks";
 import { CarSeatIllustration } from "@/components/CarSeatIllustration";
+
+/*
+  Layout follows the template's project detail page (/project/vortex):
+  giant title > "About Project" copy left + meta grid right > full-width image > titled sections.
+*/
 
 export function generateStaticParams() {
   return getStories().map((s) => ({ slug: s.slug }));
@@ -23,174 +28,172 @@ export default async function StoryPage({ params }: PageProps<"/stories/[slug]">
 
   const stageIndex = WORKFLOW.indexOf(story.verification.status);
   const isPublished = story.verification.status === "Published";
+  const stages = WORKFLOW.filter((s) => s !== "Archived" && s !== "Reimbursement Candidate");
+  const checked = story.sources.filter((s) => s.checked).length;
+
+  const meta = [
+    { k: story.officerRank, v: story.officerName },
+    { k: "Department", v: story.department },
+    { k: "Location", v: `${story.city}, ${story.state}` },
+    { k: "Date", v: story.incidentDate },
+    { k: "Type of act", v: story.category },
+    { k: "Stage", v: story.verification.status },
+  ];
 
   return (
     <article>
       {!isPublished && (
-        <div className="bg-st-verify-tint border-b border-st-verify/30">
-          <p className="mx-auto max-w-6xl px-4 sm:px-6 py-3 text-[14px] text-st-verify">
-            <span className="font-semibold">Preview.</span> This story is at the {story.verification.status} stage and
-            has not been confirmed by the department yet. It would not be public on the live site.
+        <div className="wrap">
+          <p className="border-b border-line py-3 t-small text-st-pending">
+            Preview. This story is at the {story.verification.status} stage and has not been confirmed by the department
+            yet, so it would not be public on the live site.
           </p>
         </div>
       )}
 
-      <header className="mx-auto max-w-6xl px-4 sm:px-6 pt-10 sm:pt-14">
-        <nav aria-label="Breadcrumb" className="text-[14px] text-muted">
-          <Link href="/stories" className="hover:text-ink underline underline-offset-4 decoration-line-strong">
-            Stories
-          </Link>
+      <header className="wrap pt-10 md:pt-16">
+        <nav aria-label="Breadcrumb" className="t-small text-ink-2">
+          <Link href="/stories" className="link-u">Stories</Link>
           <span aria-hidden="true"> / </span>
           <span>{story.category}</span>
         </nav>
-        <h1 className="display text-[2.75rem] sm:text-[4rem] lg:text-[4.5rem] mt-5 max-w-4xl">{story.title}</h1>
-        <p className="mt-5 text-[19px] sm:text-[21px] leading-relaxed text-ink-soft max-w-3xl">{story.dek}</p>
-        <dl className="mt-8 grid grid-cols-2 sm:flex sm:flex-wrap gap-x-10 gap-y-4 text-[15px] border-t border-line pt-5">
-          <div>
-            <dt className="text-muted">{story.officerRank}</dt>
-            <dd className="font-semibold">{story.officerName}</dd>
-          </div>
-          <div>
-            <dt className="text-muted">Department</dt>
-            <dd className="font-semibold">{story.department}</dd>
-          </div>
-          <div>
-            <dt className="text-muted">Where</dt>
-            <dd className="font-semibold">
-              {story.city}, {story.state}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-muted">When</dt>
-            <dd className="font-semibold">{story.incidentDate}</dd>
-          </div>
-        </dl>
+        <h1 className="t-h1 mt-6 max-w-[1300px]">{story.title}</h1>
       </header>
 
-      <figure className="mx-auto max-w-6xl px-4 sm:px-6 mt-10">
-        <div className="relative rounded-md overflow-hidden border border-line">
-          <CarSeatIllustration className="w-full h-auto block" />
-          <span className="absolute top-3 left-3 rounded-sm bg-ink/85 text-white text-[12px] font-semibold px-2.5 py-1">
-            Temporary placeholder image
-          </span>
+      {/* About Project + meta grid */}
+      <section className="wrap pt-12 md:pt-20 grid lg:grid-cols-[670px_1fr] gap-12 lg:gap-[240px]">
+        <div>
+          <h2 className="t-h3">About the story</h2>
+          <p className="t-body text-ink mt-6">{story.dek}</p>
         </div>
-        <figcaption className="mt-3 text-[13px] text-muted max-w-3xl">
-          {story.image.credit}. {story.image.rightsNote}
-        </figcaption>
-      </figure>
-
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 mt-12 grid lg:grid-cols-[1fr_340px] gap-12 lg:gap-16">
-        <div className="max-w-[68ch]">
-          <div className="prose-story">
-            {story.body.map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-          </div>
-
-          {story.pullQuote && (
-            <blockquote className="my-10 border-l-4 border-badge pl-5 sm:pl-6">
-              <p className="display text-[1.75rem] sm:text-[2.125rem] leading-[1.1]">{story.pullQuote}</p>
-              <footer className="mt-3 text-[14px] text-muted">Hero Cops editorial summary</footer>
-            </blockquote>
-          )}
-
-          {story.video && (
-            <div className="mt-10 rounded-md border border-dashed border-line-strong bg-surface p-5 flex gap-4 items-start">
-              <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true" className="shrink-0">
-                <rect width="36" height="36" rx="6" fill="var(--color-badge-tint)" />
-                <path d="M14 11.5v13l11-6.5z" fill="var(--color-badge)" />
-              </svg>
-              <div>
-                <p className="font-semibold">{story.video.label}</p>
-                <p className="text-[14px] text-ink-soft mt-1">
-                  {story.video.url ? (
-                    <a href={story.video.url} className="text-badge underline" target="_blank" rel="noopener noreferrer">
-                      Watch on YouTube
-                    </a>
-                  ) : (
-                    "Embed slot. The video link is listed in the brief and will be added once the owner's embed permission is confirmed."
-                  )}
-                </p>
-              </div>
+        <dl className="grid grid-cols-2 gap-x-10 gap-y-8 content-start lg:pt-2">
+          {meta.map((m) => (
+            <div key={m.k}>
+              <dt className="t-label">{m.k}</dt>
+              <dd className="t-body mt-1">{m.v}</dd>
             </div>
-          )}
+          ))}
+        </dl>
+      </section>
 
-          <section aria-labelledby="sources-title" className="mt-14">
-            <h2 id="sources-title" className="display text-[1.75rem]">Sources</h2>
-            <ul className="mt-4 divide-y divide-line border-y border-line">
-              {story.sources.map((s) => (
-                <li key={s.label} className="py-4 flex gap-4 items-start">
-                  <span
-                    className={`mt-1 shrink-0 text-[12px] font-semibold px-2 py-0.5 rounded-sm ${
-                      s.checked ? "bg-st-verified-tint text-st-verified" : "bg-st-verify-tint text-st-verify"
-                    }`}
-                  >
-                    {s.checked ? "Checked" : "To check"}
-                  </span>
-                  <div className="min-w-0">
-                    {s.url ? (
-                      <a href={s.url} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-4 decoration-line-strong hover:decoration-ink break-words">
-                        {s.label}
-                      </a>
-                    ) : (
-                      <p className="font-semibold">{s.label}</p>
-                    )}
-                    <p className="text-[14px] text-muted mt-0.5">
-                      {s.outlet}, {s.kind.toLowerCase()}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section aria-labelledby="privacy-title" className="mt-12">
-            <h2 id="privacy-title" className="display text-[1.75rem]">Privacy notes</h2>
-            <ul className="mt-4 space-y-2 text-[16px] text-ink-soft list-disc pl-5">
-              {story.privacy.map((p) => (
-                <li key={p}>{p}</li>
-              ))}
-            </ul>
-          </section>
-        </div>
-
-        <aside className="lg:sticky lg:top-24 self-start space-y-6">
-          <VerificationRecord story={story} compact />
-
-          <div className="bg-surface border border-line rounded-md p-5">
-            <p className="text-[13px] font-semibold text-ink-soft">Where this story is</p>
-            <ol className="mt-3 space-y-2">
-              {WORKFLOW.filter((s) => s !== "Archived" && s !== "Reimbursement Candidate").map((s) => {
-                const i = WORKFLOW.indexOf(s);
-                const state = i < stageIndex ? "done" : i === stageIndex ? "current" : "todo";
-                return (
-                  <li key={s} className="flex items-center gap-3 text-[14px]">
-                    <span
-                      aria-hidden="true"
-                      className={`w-2.5 h-2.5 rounded-full ${
-                        state === "done" ? "bg-st-verified" : state === "current" ? "bg-st-verify ring-4 ring-st-verify-tint" : "bg-line-strong"
-                      }`}
-                    />
-                    <span className={state === "todo" ? "text-muted" : state === "current" ? "font-semibold" : ""}>
-                      {s}
-                      {state === "current" && <span className="sr-only"> (current stage)</span>}
-                    </span>
-                  </li>
-                );
-              })}
-            </ol>
-            <p className="mt-4 text-[13px] text-muted">{story.verification.departmentNote}</p>
-          </div>
-
-          <div className="rounded-md bg-ink text-white p-5">
-            <p className="font-semibold">Know a story like this?</p>
-            <p className="text-[14px] text-white/75 mt-1">Departments and the public can send one in.</p>
-            <Link href="/submit" className="mt-4 flex items-center justify-center h-11 rounded-sm bg-white text-ink font-semibold">
-              Submit a story
-            </Link>
-          </div>
-        </aside>
+      {/* Full-width image */}
+      <div className="wrap pt-12 md:pt-20">
+        <ImageSlot label="Temporary placeholder image" ratio="16 / 8">
+          <CarSeatIllustration className="absolute inset-0 w-full h-full" />
+        </ImageSlot>
+        <p className="t-small text-muted mt-3 max-w-3xl">
+          {story.image.credit}. {story.image.rightsNote}
+        </p>
       </div>
+
+      {/* What happened */}
+      <section className="wrap pt-16 md:pt-24">
+        <h2 className="t-h3">What happened</h2>
+        <div className="mt-6 space-y-5 max-w-[1200px]">
+          {story.body.map((p, i) => (
+            <p key={i} className={i === 0 ? "t-body text-ink" : "t-body"}>{p}</p>
+          ))}
+        </div>
+        {story.video && (
+          <div className="mt-10 border-y border-line py-6 flex flex-wrap items-center justify-between gap-4 max-w-[1200px]">
+            <p className="t-label">{story.video.label}</p>
+            {story.video.url ? (
+              <a href={story.video.url} className="btn btn-outline" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+            ) : (
+              <p className="t-small text-muted max-w-md">
+                Video slot. Link to be added once the owner&apos;s permission to embed is confirmed.
+              </p>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* Verification */}
+      <section className="wrap pt-16 md:pt-24 grid lg:grid-cols-[670px_1fr] gap-12 lg:gap-[240px]">
+        <div>
+          <h2 className="t-h3">Verification</h2>
+          <p className="t-body mt-6">{story.verification.departmentNote}</p>
+          <ol className="mt-8 border-t border-line">
+            {stages.map((s) => {
+              const i = WORKFLOW.indexOf(s);
+              const state = i < stageIndex ? "done" : i === stageIndex ? "current" : "todo";
+              return (
+                <li key={s} className="flex items-center justify-between gap-4 py-4 border-b border-line">
+                  <span className={state === "todo" ? "t-label text-muted" : "t-label"}>{s}</span>
+                  {state === "done" && <StatusTag tone="verified">Done</StatusTag>}
+                  {state === "current" && <StatusTag tone="pending">Current stage</StatusTag>}
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+        <dl className="grid grid-cols-2 gap-x-10 gap-y-8 content-start">
+          <div>
+            <dt className="t-label">Sources checked</dt>
+            <dd className="t-body mt-1">{checked} of {story.sources.length}</dd>
+          </div>
+          <div>
+            <dt className="t-label">Department</dt>
+            <dd className="t-body mt-1">{story.verification.departmentConfirmed ? "Confirmed" : "Awaiting reply"}</dd>
+          </div>
+          <div>
+            <dt className="t-label">Privacy review</dt>
+            <dd className="t-body mt-1">{story.privacySummary}</dd>
+          </div>
+          <div>
+            <dt className="t-label">Personal spending</dt>
+            <dd className="t-body mt-1">
+              {story.personalSpending.involved ? `${story.personalSpending.description}. Reimbursement not yet reviewed` : "None reported"}
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      {/* Sources */}
+      <section className="wrap pt-16 md:pt-24">
+        <h2 className="t-h3">Sources</h2>
+        <ul className="mt-6 border-t border-line max-w-[1200px]">
+          {story.sources.map((s) => (
+            <li key={s.label} className="grid sm:grid-cols-[1fr_auto] gap-3 sm:gap-8 py-5 border-b border-line">
+              <div className="min-w-0">
+                {s.url ? (
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="t-label link-u break-words">{s.label}</a>
+                ) : (
+                  <p className="t-label">{s.label}</p>
+                )}
+                <p className="t-small text-ink-2 mt-1">{s.outlet}, {s.kind.toLowerCase()}</p>
+              </div>
+              <div className="sm:pt-0.5">
+                <StatusTag tone={s.checked ? "verified" : "pending"}>{s.checked ? "Checked" : "To check"}</StatusTag>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Privacy */}
+      <section className="wrap pt-16 md:pt-24">
+        <h2 className="t-h3">Privacy notes</h2>
+        <ul className="mt-6 space-y-3 max-w-[1200px]">
+          {story.privacy.map((p) => (
+            <li key={p} className="t-body flex gap-3">
+              <span aria-hidden="true" className="mt-[11px] w-1.5 h-1.5 rounded-full bg-ink shrink-0" />
+              {p}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* CTA */}
+      <section className="wrap section">
+        <div className="border-t border-line pt-14 md:pt-20 grid lg:grid-cols-[1fr_500px] gap-10 items-end">
+          <h2 className="t-h1">Know a story like this?</h2>
+          <div>
+            <p className="t-body">Departments and the public can send one in. We verify it with the department before anything is published.</p>
+            <Link href="/submit" className="btn w-full mt-6">Submit a story</Link>
+          </div>
+        </div>
+      </section>
     </article>
   );
 }

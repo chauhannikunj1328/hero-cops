@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getStories } from "@/lib/stories";
+import { ImageSlot, StatusTag } from "@/components/blocks";
 import { CarSeatIllustration } from "@/components/CarSeatIllustration";
 
 export const metadata: Metadata = {
@@ -8,38 +9,43 @@ export const metadata: Metadata = {
   description: "Verified stories of officers serving beyond the call.",
 };
 
+// Template "Projects" page: giant title, then the CMS card grid.
 export default function StoriesPage() {
   const stories = getStories();
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-12 sm:pt-16">
-      <h1 className="display text-[2.75rem] sm:text-[4rem]">Stories</h1>
-      <p className="mt-4 text-[18px] text-ink-soft max-w-2xl">
-        Each story lists its sources and how far it has been verified. This test build contains one working example
-        from the CMS collection.
+    <div className="wrap pt-10 md:pt-16 pb-[72px] md:pb-[120px]">
+      <h1 className="t-display">Stories</h1>
+      <p className="t-body mt-8 max-w-xl">
+        Each story lists its sources and how far it has been verified. This test build contains one working example from
+        the CMS collection.
       </p>
-      <ul className="mt-10 grid gap-6 md:grid-cols-2">
+      <ul className="mt-12 md:mt-16 grid md:grid-cols-2 gap-x-[30px] gap-y-12">
         {stories.map((s) => (
           <li key={s.slug}>
-            <Link href={`/stories/${s.slug}`} className="group block bg-surface border border-line rounded-md overflow-hidden hover:border-line-strong h-full">
-              <CarSeatIllustration className="w-full h-auto block" />
-              <div className="p-6">
-                <p className="text-[14px] text-muted">
-                  {s.city}, {s.state}, {s.incidentDate}
-                </p>
-                <h2 className="display text-[1.875rem] mt-2 group-hover:text-badge">{s.title}</h2>
-                <p className="mt-3 text-[16px] text-ink-soft">{s.dek}</p>
-                <p className="mt-4 text-[13px] font-semibold text-st-verify">{s.verification.status}</p>
+            <Link href={`/stories/${s.slug}`} className="group block">
+              <ImageSlot label="Temporary placeholder image" ratio="4 / 3">
+                <CarSeatIllustration className="absolute inset-0 w-full h-full group-hover:scale-[1.02] transition-transform duration-500" />
+              </ImageSlot>
+              <div className="mt-5 flex flex-wrap items-start justify-between gap-3">
+                <h2 className="t-h5 max-w-md">{s.title}</h2>
+                <StatusTag tone="pending">{s.verification.status}</StatusTag>
               </div>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {[s.category, `${s.city}, ${s.state}`, s.incidentDate].map((t) => (
+                  <li key={t} className="t-small text-ink-2 rounded-full border border-line px-3 py-1">{t}</li>
+                ))}
+              </ul>
             </Link>
           </li>
         ))}
-        <li className="rounded-md border border-dashed border-line-strong p-6 flex flex-col justify-center">
-          <h2 className="font-semibold text-[19px]">More stories are in verification</h2>
-          <p className="mt-2 text-[16px] text-ink-soft">
-            They appear here once a department confirms them. Have one to add?
-          </p>
-          <Link href="/submit" className="mt-5 self-start h-11 px-5 rounded-sm bg-badge text-white font-semibold inline-flex items-center">
-            Submit a story
+        <li>
+          <Link href="/submit" className="block">
+            <div className="ph grid place-items-center text-center px-8" style={{ aspectRatio: "4 / 3" }}>
+              <div>
+                <p className="t-h3 max-w-sm mx-auto">More stories are in verification</p>
+                <span className="btn mt-6">Submit a story</span>
+              </div>
+            </div>
           </Link>
         </li>
       </ul>

@@ -1,28 +1,72 @@
 import Link from "next/link";
 import { getStories } from "@/lib/stories";
-import { VerificationRecord } from "@/components/VerificationRecord";
+import { ImageSlot, IndexRow, SectionTitle, ServiceRow, StatusTag } from "@/components/blocks";
 import { CarSeatIllustration } from "@/components/CarSeatIllustration";
 
-const steps = [
-  { title: "Submitted", body: "A department, a witness or the person helped sends us the story and any links." },
-  { title: "Verification", body: "We open every source and check it actually supports what happened." },
-  { title: "Department contact", body: "We confirm the facts with the department's PIO and ask the officer's consent." },
-  { title: "Approved", body: "Privacy review is done. The department sees the final copy." },
-  { title: "Published", body: "The story goes live with its sources listed underneath." },
+/*
+  Section order follows the OrngLab template:
+  Hero > About > Services > Latest works > Why choose us > Working process > FAQ > Contact
+  Template sections without real Hero Cops content (stats counters, client reviews,
+  gallery, blog) are left out rather than filled with invented numbers or quotes.
+*/
+
+const audiences = [
+  {
+    title: "Departments",
+    items: ["Public information officers", "Chiefs and sheriffs", "Communications teams"],
+    body: "A trusted place to send the good work your officers do that rarely reaches the news. Sending a story is free, and you confirm every fact before it goes live.",
+  },
+  {
+    title: "The public",
+    items: ["Witnesses", "People who were helped", "Neighbors and families"],
+    body: "Saw an officer help someone, or were you the one helped? Tell us. We check every detail with the department, so the credit holds up.",
+  },
+  {
+    title: "What qualifies",
+    items: ["Immediate practical help", "Long-term mentoring", "Ongoing care", "Acts of courage"],
+    body: "Not only dramatic rescues. A car seat bought after a traffic stop, years spent mentoring kids at a boxing gym, or months of off-duty errands for a widow all count.",
+  },
 ];
 
-const kinds = [
+const trust = [
+  { title: "No cost to submit", body: "We are not asking departments for money. Sending a story, and having it verified and published, is free." },
+  { title: "You confirm the facts", body: "We contact your office before anything is published, and the story names who confirmed it." },
+  { title: "You see the final copy", body: "Corrections and concerns are handled before the story goes live, not after." },
+  { title: "You can say no", body: "If the officer or the department declines, the story is archived and never published." },
+];
+
+const steps = [
+  { title: "Submitted", body: "A department, a witness or the person who was helped sends us the story, with any links, photos or video." },
+  { title: "Verification", body: "We open every source and check that it actually supports what happened. Two independent sources, or one from the department." },
+  { title: "Department contact", body: "We confirm the facts with the department's public information officer and ask whether the officer agrees to be featured." },
+  { title: "Approved", body: "Privacy review is done and image permissions are cleared. The department sees the final copy." },
+  { title: "Published", body: "The story goes live with its sources listed underneath, so readers can see what was checked." },
+];
+
+const faqs = [
   {
-    title: "Practical help, right then",
-    body: "A car seat bought after a traffic stop. Groceries for a family instead of a jail cell. Small acts, often paid for out of the officer's own pocket.",
+    q: "Do departments pay anything?",
+    a: "No. Submitting, verification and publishing are free. Hero Cops is not asking departments for money.",
   },
   {
-    title: "Years of mentoring",
-    body: "An officer who built a boxing gym for kids in his city and sold his own home to keep it open.",
+    q: "Who verifies a story, and how?",
+    a: "A Hero Cops editor checks each source link, then confirms the facts with the department's public information officer. Nothing is published on a submitter's word alone.",
   },
   {
-    title: "Care that keeps going",
-    body: "Months of off-duty errands for a widow first met on a welfare check. No rescue, no headline moment, just showing up.",
+    q: "Will you publish the names of children or the people who were helped?",
+    a: "Not without permission. We never publish a child's name or an identifiable image of a child without a guardian's consent. People accused of an offense, unwell or in crisis are not named unless they chose to tell the story themselves.",
+  },
+  {
+    q: "Can we use our department's own photos?",
+    a: "Yes, and they are preferred. We record who owns each photo or video and only publish once the owner has given permission. News photos are never reused without a license.",
+  },
+  {
+    q: "What if the officer paid for something out of pocket?",
+    a: "Tell us roughly what was spent and whether they were paid back. We record it during verification. Any future reimbursement program will run separately, and only after a story is approved.",
+  },
+  {
+    q: "Can a published story be removed?",
+    a: "Yes. If the officer, the department or a person in the story asks, we review it and archive it if needed.",
   },
 ];
 
@@ -32,175 +76,162 @@ export default function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 pt-12 sm:pt-20 pb-16 sm:pb-24 grid lg:grid-cols-[1.25fr_1fr] gap-12 lg:gap-16 items-center">
-        <div>
-          <h1 className="display text-[3rem] sm:text-[4.5rem] lg:text-[5.25rem]">
-            Officers who went beyond the call. Checked before we tell it.
-          </h1>
-          <p className="mt-6 text-[19px] leading-relaxed text-ink-soft max-w-xl">
-            Hero Cops publishes true stories of compassion, courage and service by law-enforcement officers. Every story
-            is verified with the department before it appears here.
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Link
-              href="/submit"
-              className="inline-flex items-center justify-center h-12 px-6 rounded-sm bg-badge text-white font-semibold text-[17px] hover:bg-badge-deep"
-            >
-              Submit a story
-            </Link>
-            <Link
-              href="/stories"
-              className="inline-flex items-center justify-center h-12 px-6 rounded-sm border border-line-strong font-semibold text-[17px] hover:border-ink"
-            >
-              Read verified stories
-            </Link>
-          </div>
-        </div>
-        {featured && (
-          <div className="lg:pl-4">
-            <VerificationRecord story={featured} />
-            <p className="mt-3 text-[13px] text-muted">
-              Every story carries a record like this, so readers can see what was checked.
-            </p>
-          </div>
-        )}
+      <section className="wrap pt-10 md:pt-16">
+        <h1 className="t-display max-w-[1240px]">Officers who went beyond the call.</h1>
       </section>
 
-      {/* Who submits and why */}
-      <section className="border-y border-line bg-surface">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-20 grid md:grid-cols-2 gap-12">
-          <div>
-            <h2 className="display text-[2.25rem] sm:text-[2.75rem]">For departments</h2>
-            <p className="mt-4 text-[17px] leading-relaxed text-ink-soft">
-              A trusted place to send the good work your officers do that rarely reaches the news. There is no cost, you
-              confirm every fact, and you see the final story before it goes live.
+      {/* About */}
+      <section id="about" className="wrap pt-12 md:pt-20 grid lg:grid-cols-[690px_1fr] gap-10 lg:gap-[30px]">
+        <ImageSlot label="Image: department-supplied photo" ratio="4 / 3.4" className="rounded-none">
+          <CarSeatIllustration className="absolute inset-0 w-full h-full" />
+        </ImageSlot>
+        <div className="grid sm:grid-cols-[auto_1fr] gap-6 sm:gap-10 lg:pl-[30px] content-start">
+          <h2 className="t-h4 whitespace-nowrap">About Hero Cops</h2>
+          <div className="space-y-5 max-w-md">
+            <p className="t-body text-ink">
+              Hero Cops is a public-service storytelling platform. We publish true stories of compassion, courage and
+              service by law-enforcement officers.
             </p>
-            <Link href="/#departments" className="mt-5 inline-block font-semibold text-badge underline underline-offset-4 decoration-badge/30 hover:decoration-badge">
-              How we work with PIOs
-            </Link>
-          </div>
-          <div>
-            <h2 className="display text-[2.25rem] sm:text-[2.75rem]">For the public</h2>
-            <p className="mt-4 text-[17px] leading-relaxed text-ink-soft">
-              Saw an officer help someone, or were you the one helped? Tell us. We do the checking with the department,
-              so the officer gets credit that holds up.
+            <p className="t-body">
+              Every story is verified with the department before it appears here. Departments get a trusted place to
+              send the work their people do. The public gets stories they can rely on.
             </p>
-            <Link href="/submit" className="mt-5 inline-block font-semibold text-badge underline underline-offset-4 decoration-badge/30 hover:decoration-badge">
-              Share what you saw
-            </Link>
+            <div className="flex flex-wrap gap-3 pt-3">
+              <Link href="/submit" className="btn">Submit a story</Link>
+              <Link href="/stories" className="btn btn-outline">Read stories</Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Verification process: a real sequence, so numbered */}
-      <section id="verification" className="scroll-mt-20 mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-24">
-        <h2 className="display text-[2.5rem] sm:text-[3.25rem] max-w-2xl">How a story gets verified</h2>
-        <p className="mt-4 text-[17px] text-ink-soft max-w-2xl">
-          Nothing is published on a submitter&apos;s word alone. A story moves through five stages, and can be paused or
-          declined at any of them.
-        </p>
-        <ol className="mt-12 grid gap-px bg-line border border-line rounded-md overflow-hidden sm:grid-cols-2 lg:grid-cols-5">
-          {steps.map((s, i) => (
-            <li key={s.title} className="bg-ground p-5 sm:p-6">
-              <span className="display text-[2.5rem] text-badge tabular-nums">{i + 1}</span>
-              <h3 className="font-semibold text-[17px] mt-3">{s.title}</h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{s.body}</p>
+      {/* Services > Who sends stories */}
+      <section id="departments" className="wrap section scroll-mt-20">
+        <SectionTitle>Who sends stories</SectionTitle>
+        <div className="mt-8 md:mt-12 border-t border-line">
+          {audiences.map((a) => (
+            <ServiceRow key={a.title} {...a} />
+          ))}
+        </div>
+      </section>
+
+      {/* Latest works > Verified stories */}
+      <section id="stories" className="wrap pb-[72px] md:pb-[120px] scroll-mt-20">
+        <SectionTitle>Verified stories</SectionTitle>
+        <ul className="mt-8 md:mt-12 grid md:grid-cols-2 gap-x-[30px] gap-y-12">
+          {featured && (
+            <li>
+              <Link href={`/stories/${featured.slug}`} className="group block">
+                <ImageSlot label="Temporary placeholder image" ratio="4 / 3">
+                  <CarSeatIllustration className="absolute inset-0 w-full h-full group-hover:scale-[1.02] transition-transform duration-500" />
+                </ImageSlot>
+                <div className="mt-5 flex flex-wrap items-start justify-between gap-3">
+                  <h3 className="t-h5 max-w-md">{featured.title}</h3>
+                  <StatusTag tone="pending">{featured.verification.status}</StatusTag>
+                </div>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {[featured.category, `${featured.city}, ${featured.state}`, featured.incidentDate].map((t) => (
+                    <li key={t} className="t-small text-ink-2 rounded-full border border-line px-3 py-1">{t}</li>
+                  ))}
+                </ul>
+              </Link>
             </li>
+          )}
+          <li>
+            <Link href="/submit" className="group block">
+              <div className="ph grid place-items-center text-center px-8" style={{ aspectRatio: "4 / 3" }}>
+                <div>
+                  <p className="t-h3 max-w-sm mx-auto">The next story could come from your department.</p>
+                  <span className="btn mt-6">Submit a story</span>
+                </div>
+              </div>
+              <div className="mt-5">
+                <h3 className="t-h5">More stories are in verification</h3>
+                <p className="t-body mt-2">They appear here once a department confirms them.</p>
+              </div>
+            </Link>
+          </li>
+        </ul>
+      </section>
+
+      {/* Why choose us > Why departments trust us */}
+      <section className="wrap pb-[72px] md:pb-[120px]">
+        <SectionTitle>Why departments trust us</SectionTitle>
+        <ol className="mt-8 md:mt-12 border-t border-line">
+          {trust.map((t, i) => (
+            <IndexRow key={t.title} index={`/0${i + 1}`} title={t.title} body={t.body} />
           ))}
         </ol>
-        <p className="mt-5 text-[14px] text-muted max-w-2xl">
+      </section>
+
+      {/* Working process > How verification works */}
+      <section id="process" className="wrap pb-[72px] md:pb-[120px] scroll-mt-20">
+        <SectionTitle>How a story gets verified</SectionTitle>
+        <ol className="mt-8 md:mt-12 border-t border-line">
+          {steps.map((s, i) => (
+            <IndexRow key={s.title} index={`/STEP-${i + 1}`} title={s.title} body={s.body} wide />
+          ))}
+        </ol>
+        <p className="t-body mt-6 max-w-2xl lg:ml-[590px]">
           When an officer spent their own money, we record the amount during verification. Any future reimbursement is
           handled separately and only after the story is approved.
         </p>
       </section>
 
-      {/* Featured story */}
-      {featured && (
-        <section className="mx-auto max-w-6xl px-4 sm:px-6 pb-16 sm:pb-24">
-          <h2 className="text-[15px] font-semibold text-ink-soft mb-4">Featured story</h2>
-          <Link href={`/stories/${featured.slug}`} className="group grid md:grid-cols-[1.1fr_1fr] bg-surface border border-line rounded-md overflow-hidden hover:border-line-strong">
-            <CarSeatIllustration className="w-full h-full min-h-[220px] object-cover" />
-            <div className="p-6 sm:p-10 flex flex-col">
-              <p className="text-[14px] text-muted">
-                {featured.city}, {featured.state}, {featured.incidentDate}
-              </p>
-              <h3 className="display text-[2rem] sm:text-[2.5rem] mt-3 group-hover:text-badge">{featured.title}</h3>
-              <p className="mt-4 text-[17px] leading-relaxed text-ink-soft">{featured.dek}</p>
-              <span className="mt-auto pt-6 font-semibold text-badge">Read the story</span>
-            </div>
-          </Link>
-        </section>
-      )}
-
-      {/* What qualifies */}
-      <section className="bg-ink text-white">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-24">
-          <h2 className="display text-[2.5rem] sm:text-[3.25rem] max-w-2xl">What counts as a Hero Cops story</h2>
-          <p className="mt-4 text-[17px] text-white/75 max-w-2xl">
-            Not only dramatic rescues. Most of the stories we look for are quiet, and many happen off duty.
-          </p>
-          <div className="mt-12 grid gap-10 md:grid-cols-3">
-            {kinds.map((k) => (
-              <div key={k.title} className="border-t border-white/25 pt-5">
-                <h3 className="font-semibold text-[19px]">{k.title}</h3>
-                <p className="mt-3 text-[16px] leading-relaxed text-white/75">{k.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* For departments */}
-      <section id="departments" className="scroll-mt-20 mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-[1fr_1.1fr] gap-12">
-        <div>
-          <h2 className="display text-[2.5rem] sm:text-[3.25rem]">Working with public information officers</h2>
-          <p className="mt-4 text-[17px] leading-relaxed text-ink-soft">
-            We want to be the easiest place for a communications team to send a good story, and a careful one.
-          </p>
-        </div>
-        <ul className="space-y-6">
-          {[
-            ["No cost to submit.", "We are not asking departments for money. Sending a story is free."],
-            ["You confirm the facts.", "We contact your office before anything is published, and we name who confirmed it."],
-            ["You see the final copy.", "Corrections and concerns are handled before the story goes live, not after."],
-            ["You can say no.", "If the officer or department declines, the story is archived and never published."],
-          ].map(([t, b]) => (
-            <li key={t} className="flex gap-4">
-              <span className="mt-2 w-2 h-2 rounded-full bg-badge shrink-0" aria-hidden="true" />
-              <p className="text-[17px] leading-relaxed">
-                <span className="font-semibold">{t}</span> <span className="text-ink-soft">{b}</span>
-              </p>
-            </li>
+      {/* FAQ */}
+      <section id="faq" className="wrap pb-[72px] md:pb-[120px] grid lg:grid-cols-[440px_1fr] gap-8 lg:gap-10 scroll-mt-20">
+        <SectionTitle>FAQ</SectionTitle>
+        <div className="border-t border-line lg:mt-6">
+          {faqs.map((f, i) => (
+            <details key={f.q} className="faq border-b border-line" open={i === 0}>
+              <summary className="flex items-start justify-between gap-6 py-6">
+                <span className="t-h5">{f.q}</span>
+                <svg className="faq-icon shrink-0 mt-1" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M10 3v14M3 10h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              </summary>
+              <p className="t-body pb-6 max-w-2xl -mt-1">{f.a}</p>
+            </details>
           ))}
-        </ul>
-      </section>
-
-      {/* Privacy */}
-      <section id="privacy" className="scroll-mt-20 border-t border-line">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-20 grid lg:grid-cols-[1fr_1.1fr] gap-12">
-          <h2 className="display text-[2.25rem] sm:text-[2.75rem]">Privacy and permissions</h2>
-          <ul className="space-y-4 text-[16px] leading-relaxed text-ink-soft list-disc pl-5">
-            <li>We never publish a child&apos;s name or an identifiable image of a child without a guardian&apos;s permission.</li>
-            <li>People accused of an offense, unwell or in crisis are not named unless they chose to tell the story themselves.</li>
-            <li>Photos and video are used only when the owner gives permission. News photos are never reused without a license.</li>
-            <li>Submitter contact details are used for verification only and are never published.</li>
-          </ul>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="rounded-md bg-badge text-white px-6 py-12 sm:px-12 sm:py-16 grid md:grid-cols-[1.4fr_auto] gap-8 items-center">
-          <div>
-            <h2 className="display text-[2.25rem] sm:text-[3rem]">Know an officer who went beyond the call?</h2>
-            <p className="mt-3 text-[17px] text-white/80">It takes about 10 minutes. We handle the verification.</p>
+      {/* Contact us > Submit a story */}
+      <section className="wrap pb-[72px] md:pb-[120px]">
+        <div className="border-t border-line pt-14 md:pt-20 grid lg:grid-cols-[1fr_500px] gap-12">
+          <div className="flex flex-col justify-between gap-10">
+            <SectionTitle>Know a story like this?</SectionTitle>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 max-w-xl">
+              <div>
+                <p className="t-small text-muted">Main</p>
+                <ul className="mt-3 space-y-2 t-label">
+                  <li><Link href="/" className="hover:opacity-60">Home</Link></li>
+                  <li><Link href="/stories" className="hover:opacity-60">Stories</Link></li>
+                </ul>
+              </div>
+              <div>
+                <p className="t-small text-muted">How it works</p>
+                <ul className="mt-3 space-y-2 t-label">
+                  <li><Link href="/#process" className="hover:opacity-60">Verification</Link></li>
+                  <li><Link href="/#faq" className="hover:opacity-60">FAQ</Link></li>
+                </ul>
+              </div>
+              <div>
+                <p className="t-small text-muted">Departments</p>
+                <ul className="mt-3 space-y-2 t-label">
+                  <li><Link href="/#departments" className="hover:opacity-60">For PIOs</Link></li>
+                  <li><Link href="/submit" className="hover:opacity-60">Submit</Link></li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <Link
-            href="/submit"
-            className="inline-flex items-center justify-center h-12 px-6 rounded-sm bg-white text-badge font-semibold text-[17px] hover:bg-badge-tint"
-          >
-            Submit a story
-          </Link>
+          <div>
+            <h3 className="t-h4">Send us a story about an officer</h3>
+            <p className="t-body mt-4">
+              It takes about 10 minutes. Tell us what happened and who can confirm it. We handle the verification with
+              the department, and nothing is published until they confirm it.
+            </p>
+            <Link href="/submit" className="btn w-full mt-8">Submit a story</Link>
+          </div>
         </div>
       </section>
     </>

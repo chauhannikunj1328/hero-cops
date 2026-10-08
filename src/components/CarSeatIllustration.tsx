@@ -1,19 +1,14 @@
-/** Temporary placeholder art. Used until a licensed or department-supplied photo is cleared. */
+/** Temporary placeholder art, monochrome to sit inside the template's grey image frames. */
 export function CarSeatIllustration({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 640 400" className={className} role="img" aria-label="Illustration of a child's car seat (placeholder)">
-      <rect width="640" height="400" fill="#dfe6f2" />
-      <rect y="300" width="640" height="100" fill="#cdd6e6" />
-      <circle cx="520" cy="90" r="42" fill="#f2f4f8" opacity="0.8" />
-      {/* seat shell */}
-      <path d="M250 300 C238 230 240 150 262 98 C276 66 330 58 358 70 C384 82 392 120 388 168 L380 236 C420 240 446 262 446 300 Z" fill="#1f3c88" />
-      <path d="M272 112 C286 86 330 82 348 92 C366 102 368 132 364 170 L356 236 L290 236 C276 198 266 150 272 112 Z" fill="#2f55b5" />
-      {/* harness */}
-      <path d="M300 112 L318 214 M346 112 L330 214" stroke="#e8ecf5" strokeWidth="9" strokeLinecap="round" />
-      <rect x="310" y="196" width="28" height="22" rx="4" fill="#f2b33d" />
-      {/* base */}
-      <rect x="236" y="296" width="226" height="22" rx="6" fill="#162b63" />
-      <rect x="250" y="318" width="198" height="10" rx="4" fill="#121a24" opacity="0.25" />
+    <svg viewBox="0 0 640 480" className={className} role="img" aria-label="Illustration of a child's car seat (placeholder)" preserveAspectRatio="xMidYMid slice">
+      <rect width="640" height="480" fill="#f4f4f4" />
+      <rect y="360" width="640" height="120" fill="#ebebeb" />
+      <path d="M250 360 C238 280 240 190 262 132 C276 96 330 88 358 100 C384 112 392 154 388 206 L380 286 C420 290 446 314 446 360 Z" fill="#0c0407" />
+      <path d="M272 146 C286 118 330 114 348 124 C366 134 368 166 364 206 L356 286 L290 286 C276 244 266 190 272 146 Z" fill="#4c4c4c" />
+      <path d="M300 146 L318 260 M346 146 L330 260" stroke="#f4f4f4" strokeWidth="9" strokeLinecap="round" />
+      <rect x="310" y="242" width="28" height="22" rx="4" fill="#e9e9e9" />
+      <rect x="236" y="356" width="226" height="22" rx="6" fill="#0c0407" />
     </svg>
   );
 }

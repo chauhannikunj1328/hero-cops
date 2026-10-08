@@ -69,35 +69,40 @@ export function SubmitForm() {
   if (status === "done" && result) {
     return (
       <div className="max-w-2xl" role="status">
-        <div className="rounded-md border border-st-verified bg-st-verified-tint p-6 sm:p-8">
-          <p className="text-[15px] font-semibold text-st-verified">Story received</p>
-          <h2 className="display text-[2.25rem] sm:text-[2.75rem] mt-2">Thank you. Reference {result.reference}</h2>
-          <p className="mt-4 text-[17px] leading-relaxed text-ink-soft">
-            Your story is now in our verification queue. An editor will check the sources and contact the
-            department before anything is published. We will email you if we need more detail.
+        <p className="t-label text-st-verified">Story received</p>
+        <h2 className="t-h2 mt-3">Thank you. Reference {result.reference}</h2>
+        <p className="t-body mt-5">
+          Your story is now in our verification queue. An editor will check the sources and contact the department
+          before anything is published. We will email you if we need more detail.
+        </p>
+        {result.mode === "demo" && (
+          <p className="t-small mt-5 bg-fill px-4 py-3">
+            Test mode: the form validated correctly, but no database is connected to this preview, so nothing was
+            stored.
           </p>
-          {result.mode === "demo" && (
-            <p className="mt-4 text-[15px] rounded-sm bg-surface border border-line px-4 py-3">
-              Test mode: the form validated correctly, but no database is connected to this preview, so nothing was
-              stored.
-            </p>
-          )}
-          {result.warnings.length > 0 && (
-            <ul className="mt-4 text-[15px] text-st-verify list-disc pl-5">
-              {result.warnings.map((w) => (
-                <li key={w}>{w}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <h3 className="font-semibold text-[17px] mt-10">What happens next</h3>
-        <ol className="mt-3 space-y-2 text-[16px] text-ink-soft list-decimal pl-5">
-          <li>We open every source link and check it supports the story.</li>
-          <li>We contact the department to confirm the facts and the officer&apos;s consent.</li>
-          <li>We review privacy: names of children or people in hard situations are left out.</li>
-          <li>The department sees the final copy before we publish.</li>
+        )}
+        {result.warnings.length > 0 && (
+          <ul className="t-small mt-4 text-st-pending list-disc pl-5">
+            {result.warnings.map((w) => (
+              <li key={w}>{w}</li>
+            ))}
+          </ul>
+        )}
+        <h3 className="t-h5 mt-12">What happens next</h3>
+        <ol className="mt-4 border-t border-line">
+          {[
+            "We open every source link and check it supports the story.",
+            "We contact the department to confirm the facts and the officer's consent.",
+            "We review privacy: names of children or people in hard situations are left out.",
+            "The department sees the final copy before we publish.",
+          ].map((t, i) => (
+            <li key={t} className="grid grid-cols-[72px_1fr] gap-4 py-4 border-b border-line">
+              <span className="t-label text-ink-2">/STEP-{i + 1}</span>
+              <span className="t-body text-ink">{t}</span>
+            </li>
+          ))}
         </ol>
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-10 flex flex-wrap gap-3">
           <button
             type="button"
             onClick={() => {
@@ -106,11 +111,11 @@ export function SubmitForm() {
               setPersonalFunds("");
               setHasMedia(false);
             }}
-            className="h-11 px-5 rounded-sm border border-line-strong font-semibold"
+            className="btn btn-outline"
           >
             Submit another story
           </button>
-          <Link href="/stories" className="h-11 px-5 rounded-sm bg-badge text-white font-semibold inline-flex items-center">
+          <Link href="/stories" className="btn">
             Read verified stories
           </Link>
         </div>
@@ -132,13 +137,13 @@ export function SubmitForm() {
   });
 
   return (
-    <div className="grid lg:grid-cols-[220px_1fr] gap-10">
+    <div className="grid lg:grid-cols-[1fr_690px] gap-12 lg:gap-[30px]">
       <nav aria-label="Form sections" className="hidden lg:block">
-        <ol className="sticky top-24 space-y-1 text-[15px] border-l border-line">
+        <ol className="sticky top-28 border-t border-line max-w-sm">
           {SECTIONS.map((s, i) => (
             <li key={s.id}>
-              <a href={`#${s.id}`} className="flex gap-3 py-2 pl-4 -ml-px border-l-2 border-transparent hover:border-badge text-ink-soft hover:text-ink">
-                <span className="tabular-nums text-muted">{i + 1}</span>
+              <a href={`#${s.id}`} className="flex gap-6 py-4 border-b border-line t-label hover:opacity-60 transition-opacity">
+                <span className="text-ink-2 w-8">/0{i + 1}</span>
                 {s.label}
               </a>
             </li>
@@ -146,9 +151,9 @@ export function SubmitForm() {
         </ol>
       </nav>
 
-      <form ref={formRef} onSubmit={onSubmit} noValidate className="max-w-2xl space-y-14" encType="multipart/form-data">
+      <form ref={formRef} onSubmit={onSubmit} noValidate className="space-y-20" encType="multipart/form-data">
         {status === "error" && message && (
-          <div role="alert" className="rounded-sm border border-st-alert bg-st-alert-tint px-4 py-3 text-[15px]">
+          <div role="alert" className="border-l-2 border-st-alert bg-fill px-4 py-3 t-small text-ink">
             {message}
           </div>
         )}
@@ -164,7 +169,7 @@ export function SubmitForm() {
         <Section id="about-you" n={1} title="About you" hint="So we can follow up. Your contact details are never published.">
           <fieldset>
             <legend className="field-label">Who are you?</legend>
-            <div className="grid sm:grid-cols-2 gap-2">
+            <div className="flex flex-wrap gap-2 mt-2">
               {SUBMITTER_TYPES.map((t) => (
                 <label key={t} className="choice">
                   <input type="radio" name="submitterType" value={t} required />
@@ -226,8 +231,8 @@ export function SubmitForm() {
               </Field>
             </div>
           </Row>
-          <div className="rounded-md bg-surface border border-line p-4 sm:p-5 space-y-5">
-            <p className="text-[15px] text-ink-soft">
+          <div className="bg-fill p-5 sm:p-6 space-y-5">
+            <p className="t-body">
               Who at the department can confirm this? Usually the public information officer or communications
               director. Leave blank if you don&apos;t know and we&apos;ll find them.
             </p>
@@ -287,7 +292,7 @@ export function SubmitForm() {
               type="file"
               multiple
               accept="image/jpeg,image/png,image/webp,image/heic,video/mp4,video/quicktime,application/pdf"
-              className="field-input file:mr-3 file:rounded-sm file:border-0 file:bg-badge-tint file:px-3 file:py-1.5 file:font-semibold"
+              className="field-input file:mr-4 file:rounded-full file:border-0 file:bg-ink file:text-white file:px-4 file:py-2 file:font-semibold"
               onChange={(e) => {
                 const files = e.currentTarget.files?.length ?? 0;
                 const links = formRef.current?.querySelector<HTMLTextAreaElement>("#mediaLinks")?.value.trim() ?? "";
@@ -324,7 +329,7 @@ export function SubmitForm() {
             {err("personalFunds")}
           </fieldset>
           {personalFunds === "Yes" && (
-            <div className="space-y-5 border-l-2 border-badge pl-4 sm:pl-5">
+            <div className="space-y-6 border-l border-ink pl-5 sm:pl-6">
               <Row>
                 <Field label="Approximate amount (USD)" optional error={err("approxAmount")}>
                   <input {...a("approxAmount")} inputMode="decimal" className="field-input" placeholder="$" />
@@ -338,7 +343,7 @@ export function SubmitForm() {
                 <Choices name="alreadyReimbursed" options={REIMBURSED} />
                 {err("alreadyReimbursed")}
               </fieldset>
-              <p className="text-[14px] text-muted">
+              <p className="t-small text-muted">
                 Hero Cops does not collect or send money through this form. Spending is recorded only so it can be
                 verified.
               </p>
@@ -368,13 +373,13 @@ export function SubmitForm() {
           <Field label="Anything we should keep private?" optional hint="Names to leave out, details that could cause harm, requests from the family.">
             <textarea {...a("privacyNotes")} rows={3} className="field-input" />
           </Field>
-          <div className="space-y-3">
-            <label className="choice">
+          <div className="space-y-4 pt-2">
+            <label className="check">
               <input type="checkbox" name="confirmAccurate" aria-invalid={errors.confirmAccurate ? true : undefined} />
               <span>The information I&apos;ve given is accurate to the best of my knowledge.</span>
             </label>
             {err("confirmAccurate")}
-            <label className="choice">
+            <label className="check">
               <input type="checkbox" name="consentToContact" aria-invalid={errors.consentToContact ? true : undefined} />
               <span>Hero Cops may contact me and the department to verify this story before anything is published.</span>
             </label>
@@ -382,15 +387,11 @@ export function SubmitForm() {
           </div>
         </Section>
 
-        <div className="border-t border-line pt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-          <button
-            type="submit"
-            disabled={status === "sending"}
-            className="h-12 px-6 rounded-sm bg-badge text-white font-semibold text-[17px] hover:bg-badge-deep disabled:opacity-60 w-full sm:w-auto"
-          >
+        <div className="border-t border-line pt-10">
+          <button type="submit" disabled={status === "sending"} className="btn w-full disabled:opacity-60">
             {status === "sending" ? "Sending story…" : "Send story for verification"}
           </button>
-          <p className="text-[14px] text-muted">Nothing is published until the department confirms it.</p>
+          <p className="t-small text-muted mt-4 text-center">Nothing is published until the department confirms it.</p>
         </div>
       </form>
     </div>
@@ -399,11 +400,11 @@ export function SubmitForm() {
 
 function Section({ id, n, title, hint, children }: { id: string; n: number; title: string; hint?: string; children: React.ReactNode }) {
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-24 space-y-5">
-      <div>
-        <p className="text-[14px] text-muted tabular-nums">Step {n} of 6</p>
-        <h2 id={`${id}-title`} className="display text-[1.875rem] mt-1">{title}</h2>
-        {hint && <p className="mt-2 text-[15px] text-ink-soft">{hint}</p>}
+    <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-28 space-y-7">
+      <div className="border-t border-ink pt-5">
+        <p className="t-label text-ink-2">/0{n} <span className="sr-only">of 6</span></p>
+        <h2 id={`${id}-title`} className="t-h3 mt-3">{title}</h2>
+        {hint && <p className="t-body mt-3">{hint}</p>}
       </div>
       {children}
     </section>
@@ -411,7 +412,7 @@ function Section({ id, n, title, hint, children }: { id: string; n: number; titl
 }
 
 function Row({ children }: { children: React.ReactNode }) {
-  return <div className="grid sm:grid-cols-2 gap-5 sm:gap-4">{children}</div>;
+  return <div className="grid sm:grid-cols-2 gap-7 sm:gap-[30px]">{children}</div>;
 }
 
 function Field({ label, optional, hint, error, children }: { label: string; optional?: boolean; hint?: string; error?: React.ReactNode; children: React.ReactElement<{ id?: string }> }) {
@@ -431,9 +432,9 @@ function Field({ label, optional, hint, error, children }: { label: string; opti
 
 function Choices<T extends string>({ name, options, onChange }: { name: string; options: readonly T[]; onChange?: (v: T) => void }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 mt-2">
       {options.map((o) => (
-        <label key={o} className="choice flex-1 min-w-[96px]">
+        <label key={o} className="choice">
           <input type="radio" name={name} value={o} onChange={() => onChange?.(o)} />
           {o}
         </label>
