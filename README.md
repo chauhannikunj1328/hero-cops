@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hero Cops: trial build (Next.js + Airtable)
 
-## Getting Started
+Test environment only. Does not touch HeroCops.us, its WordPress install, domain, DNS or hosting.
 
-First, run the development server:
+## What's here
+
+| Route | What it is |
+| --- | --- |
+| `/` | Landing page: what Hero Cops is, why departments and the public submit, how verification works |
+| `/stories` | Story index (CMS collection) |
+| `/stories/officer-joshua-scaglione-car-seat` | Working CMS story page with sources, privacy notes and a public verification record |
+| `/submit` | Submit a Hero Story form (6 sections, validated client and server side) |
+| `/api/submit` | Writes a submission into the Airtable workflow base |
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # paste your Airtable token
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without `AIRTABLE_TOKEN` the form still validates and shows a "Test mode: nothing was stored" confirmation.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Airtable token
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Go to airtable.com/create/tokens and create a Personal Access Token.
+2. Scopes: `data.records:read`, `data.records:write`.
+3. Access: only the base **Hero Cops – Story Workflow (TEST)** (`appps7h31nIkBuNfU`).
+4. Put it in `.env.local` as `AIRTABLE_TOKEN`. Never commit it.
 
-## Learn More
+## What a submission writes
 
-To learn more about Next.js, take a look at the following resources:
+1. **Departments**: finds the agency by name + state, or creates it (`Relationship stage = Not contacted`).
+2. **Stories**: new record at `Status = Submitted`, with a dated **Next action**.
+3. **Sources**: one record per link, unchecked.
+4. **Media Assets**: one record per upload or media link, `Permission status = Not requested`. Uploads go to Airtable's attachment endpoint (5 MB limit each).
+5. **Reimbursements (Phase 2)**: a stub claim only if the officer spent their own money and wasn't paid back. No payments.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Field IDs (not names) are used in `src/lib/airtable.ts`, so columns can be renamed in Airtable safely.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Key files
 
-## Deploy on Vercel
+- `src/lib/submission-schema.ts`: form fields, options and validation (zod)
+- `src/lib/airtable.ts`: Airtable writes
+- `src/lib/stories.ts`: story CMS collection (mirrors Airtable "Published" fields)
+- `src/components/VerificationRecord.tsx`: the public verification record
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Fonts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Archivo and Source Serif 4 (SIL Open Font License), self-hosted in `src/fonts`.
