@@ -34,7 +34,7 @@ existing template section with Hero Cops content swapped in.
 | Small | 14 / 20 | | | 500 | -2% |
 
 ### Layout
-- Full-width stacks with 30px side padding (16px on phone). No max-width container, as in the template.
+- Stacks with 30px side padding (16px on phone), capped at a 1512px max-width container (padding included), centered.
 - Section gap 120px desktop, 72px phone.
 - Buttons: black pill (48px tall, 28px side padding) and outline pill. Header CTA is an underlined text link.
 
