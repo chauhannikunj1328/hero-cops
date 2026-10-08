@@ -7,7 +7,7 @@
  * Privacy defaults applied to every story (same rules as the Airtable Privacy review field):
  * - officers are named; people helped are named only if they told the story publicly themselves
  * - people accused of an offense, children and foster families are not named
- * - no news photographs; placeholder art until a rights-cleared image exists
+ * - no news photographs; illustrative stock photos (src/lib/photos.ts) until a rights-cleared image exists
  */
 import type { ArtKind } from "@/components/StoryArt";
 
@@ -131,7 +131,7 @@ const stories: Story[] = [
     incidentDate: "Ongoing",
     category: "Long-term mentoring",
     art: "glove",
-    imageNote: "Gym photos show young people and need guardian releases confirmed by the gym. Placeholder art until then.",
+    imageNote: "Gym photos show young people and need guardian releases confirmed by the gym. Illustrative stock photo until then.",
     body: [
       "Springfield Police Officer Dean Fay saw what gangs, violence and a lack of structure were doing to young people in his city.",
       "He founded Central City Boxing & Barbell as a place where they could learn boxing, physical discipline and personal responsibility. Tutoring and education became part of the program too.",

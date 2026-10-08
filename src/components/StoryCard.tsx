@@ -2,14 +2,15 @@ import Link from "next/link";
 import type { Story } from "@/lib/stories";
 import { statusTone } from "@/lib/stories";
 import { ImageSlot, StatusTag } from "./blocks";
-import { StoryArt } from "./StoryArt";
+import { STOCK_PHOTOS } from "@/lib/photos";
+import { StoryPhoto } from "./StoryPhoto";
 
 /** Template "Latest works" card, bound to one Stories CMS item. */
 export function StoryCard({ story }: { story: Story }) {
   return (
     <Link href={`/stories/${story.slug}`} className="group block">
-      <ImageSlot label="Placeholder image" ratio="4 / 3">
-        <StoryArt kind={story.art} className="absolute inset-0 w-full h-full group-hover:scale-[1.02] transition-transform duration-500" />
+      <ImageSlot label="Illustrative photo" ratio="4 / 3">
+        <StoryPhoto photo={STOCK_PHOTOS[story.art]} sizes="(min-width: 768px) 50vw, 100vw" className="group-hover:scale-[1.02] transition-transform duration-500" />
       </ImageSlot>
       <div className="mt-5 flex flex-wrap items-start justify-between gap-3">
         <h3 className="t-h5 max-w-md">{story.title}</h3>

@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllStories, getStory, statusTone, WORKFLOW } from "@/lib/stories";
 import { ImageSlot, StatusTag } from "@/components/blocks";
-import { StoryArt } from "@/components/StoryArt";
+import { PhotoCredit, StoryPhoto } from "@/components/StoryPhoto";
+import { STOCK_PHOTOS } from "@/lib/photos";
 
 /*
   Layout follows the template's project detail page (/project/vortex):
@@ -84,11 +85,11 @@ export default async function StoryPage({ params }: PageProps<"/stories/[slug]">
 
       {/* Full-width image */}
       <div className="wrap pt-12 md:pt-20">
-        <ImageSlot label="Placeholder image" ratio="16 / 8">
-          <StoryArt kind={story.art} className="absolute inset-0 w-full h-full" />
+        <ImageSlot label="Illustrative photo" ratio="16 / 8">
+          <StoryPhoto photo={STOCK_PHOTOS[story.art]} sizes="100vw" priority />
         </ImageSlot>
         <p className="t-small text-muted mt-3 max-w-3xl">
-          Placeholder illustration. {story.imageNote}
+          Illustrative stock photo, not from the event. <PhotoCredit photo={STOCK_PHOTOS[story.art]} />. {story.imageNote}
         </p>
       </div>
 

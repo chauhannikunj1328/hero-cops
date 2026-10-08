@@ -2,7 +2,8 @@ import Link from "next/link";
 import { getStories } from "@/lib/stories";
 import { ImageSlot, IndexRow, SectionTitle, ServiceRow } from "@/components/blocks";
 import { StoryCard, SubmitCard } from "@/components/StoryCard";
-import { StoryArt } from "@/components/StoryArt";
+import { PhotoCredit, StoryPhoto } from "@/components/StoryPhoto";
+import { ABOUT_PHOTO } from "@/lib/photos";
 
 /*
   Section order follows the OrngLab template:
@@ -83,9 +84,12 @@ export default function Home() {
 
       {/* About */}
       <section id="about" className="wrap pt-12 md:pt-20 grid lg:grid-cols-[690px_1fr] gap-10 lg:gap-[30px]">
-        <ImageSlot label="Image: department-supplied photo" ratio="4 / 3.4" className="rounded-none">
-          <StoryArt kind="car" className="absolute inset-0 w-full h-full" />
-        </ImageSlot>
+        <div>
+          <ImageSlot label="Illustrative photo" ratio="4 / 3.4" className="rounded-none">
+            <StoryPhoto photo={ABOUT_PHOTO} sizes="(min-width: 1024px) 690px, 100vw" priority />
+          </ImageSlot>
+          <p className="t-small text-muted mt-3"><PhotoCredit photo={ABOUT_PHOTO} /></p>
+        </div>
         <div className="grid sm:grid-cols-[auto_1fr] gap-6 sm:gap-10 lg:pl-[30px] content-start">
           <h2 className="t-h4 whitespace-nowrap">About Hero Cops</h2>
           <div className="space-y-5 max-w-md">
