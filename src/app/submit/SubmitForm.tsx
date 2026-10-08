@@ -288,7 +288,11 @@ export function SubmitForm() {
               multiple
               accept="image/jpeg,image/png,image/webp,image/heic,video/mp4,video/quicktime,application/pdf"
               className="field-input file:mr-3 file:rounded-sm file:border-0 file:bg-badge-tint file:px-3 file:py-1.5 file:font-semibold"
-              onChange={(e) => setHasMedia((e.currentTarget.files?.length ?? 0) > 0)}
+              onChange={(e) => {
+                const files = e.currentTarget.files?.length ?? 0;
+                const links = formRef.current?.querySelector<HTMLTextAreaElement>("#mediaLinks")?.value.trim() ?? "";
+                setHasMedia(files > 0 || links.length > 0);
+              }}
             />
           </Field>
           <Field label="Links to photos or video" optional error={err("mediaLinks")} hint="Google Drive, Dropbox, YouTube. One per line.">
@@ -297,7 +301,11 @@ export function SubmitForm() {
               rows={2}
               className="field-input"
               placeholder="https://"
-              onChange={(e) => setHasMedia((v) => v || e.currentTarget.value.trim().length > 0)}
+              onChange={(e) => {
+                const hasLinks = e.currentTarget.value.trim().length > 0;
+                const files = formRef.current?.querySelector<HTMLInputElement>("#media")?.files?.length ?? 0;
+                setHasMedia(hasLinks || files > 0);
+              }}
             />
           </Field>
           {hasMedia && (
