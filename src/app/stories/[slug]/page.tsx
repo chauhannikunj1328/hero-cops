@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStories, getStory, WORKFLOW } from "@/lib/stories";
+import { getAllStories, getStory, statusTone, WORKFLOW } from "@/lib/stories";
 import { ImageSlot, StatusTag } from "@/components/blocks";
-import { CarSeatIllustration } from "@/components/CarSeatIllustration";
+import { StoryArt } from "@/components/StoryArt";
 
 /*
   Layout follows the template's project detail page (/project/vortex):
@@ -11,7 +11,7 @@ import { CarSeatIllustration } from "@/components/CarSeatIllustration";
 */
 
 export function generateStaticParams() {
-  return getStories().map((s) => ({ slug: s.slug }));
+  return getAllStories().map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/stories/[slug]">): Promise<Metadata> {
@@ -26,8 +26,13 @@ export default async function StoryPage({ params }: PageProps<"/stories/[slug]">
   const story = getStory(slug);
   if (!story) notFound();
 
-  const stageIndex = WORKFLOW.indexOf(story.verification.status);
+  // Reimbursement Candidate is a side track after Approved, so the public stage list shows Approved as current.
+  const stageIndex = WORKFLOW.indexOf(story.verification.status === "Reimbursement Candidate" ? "Approved" : story.verification.status);
   const isPublished = story.verification.status === "Published";
+  const isArchived = story.verification.status === "Archived";
+  const all = getAllStories();
+  const idx = all.findIndex((s) => s.slug === story.slug);
+  const next = all[(idx + 1) % all.length];
   const stages = WORKFLOW.filter((s) => s !== "Archived" && s !== "Reimbursement Candidate");
   const checked = story.sources.filter((s) => s.checked).length;
 
@@ -44,9 +49,10 @@ export default async function StoryPage({ params }: PageProps<"/stories/[slug]">
     <article>
       {!isPublished && (
         <div className="wrap">
-          <p className="border-b border-line py-3 t-small text-st-pending">
-            Preview. This story is at the {story.verification.status} stage and has not been confirmed by the department
-            yet, so it would not be public on the live site.
+          <p className={`border-b border-line py-3 t-small ${isArchived ? "text-ink-2" : "text-st-pending"}`}>
+            {isArchived
+              ? "Archived. This story is kept in the workflow for reference and would never be public on the live site."
+              : `Preview. This story is at the ${story.verification.status} stage, so it would not be public on the live site yet.`}
           </p>
         </div>
       )}
@@ -78,11 +84,11 @@ export default async function StoryPage({ params }: PageProps<"/stories/[slug]">
 
       {/* Full-width image */}
       <div className="wrap pt-12 md:pt-20">
-        <ImageSlot label="Temporary placeholder image" ratio="16 / 8">
-          <CarSeatIllustration className="absolute inset-0 w-full h-full" />
+        <ImageSlot label="Placeholder image" ratio="16 / 8">
+          <StoryArt kind={story.art} className="absolute inset-0 w-full h-full" />
         </ImageSlot>
         <p className="t-small text-muted mt-3 max-w-3xl">
-          {story.image.credit}. {story.image.rightsNote}
+          Placeholder illustration. {story.imageNote}
         </p>
       </div>
 
@@ -116,12 +122,12 @@ export default async function StoryPage({ params }: PageProps<"/stories/[slug]">
           <ol className="mt-8 border-t border-line">
             {stages.map((s) => {
               const i = WORKFLOW.indexOf(s);
-              const state = i < stageIndex ? "done" : i === stageIndex ? "current" : "todo";
+              const state = isArchived ? "todo" : i < stageIndex ? "done" : i === stageIndex ? "current" : "todo";
               return (
                 <li key={s} className="flex items-center justify-between gap-4 py-4 border-b border-line">
                   <span className={state === "todo" ? "t-label text-muted" : "t-label"}>{s}</span>
                   {state === "done" && <StatusTag tone="verified">Done</StatusTag>}
-                  {state === "current" && <StatusTag tone="pending">Current stage</StatusTag>}
+                  {state === "current" && <StatusTag tone={statusTone(story.verification.status)}>Current stage</StatusTag>}
                 </li>
               );
             })}
@@ -143,7 +149,7 @@ export default async function StoryPage({ params }: PageProps<"/stories/[slug]">
           <div>
             <dt className="t-label">Personal spending</dt>
             <dd className="t-body mt-1">
-              {story.personalSpending.involved ? `${story.personalSpending.description}. Reimbursement not yet reviewed` : "None reported"}
+              {story.personalSpending.involved ? `${story.personalSpending.description}. ${story.personalSpending.reimbursement}` : "None reported"}
             </dd>
           </div>
         </dl>
@@ -183,6 +189,17 @@ export default async function StoryPage({ params }: PageProps<"/stories/[slug]">
           ))}
         </ul>
       </section>
+
+      {/* Next story (CMS pagination) */}
+      <nav aria-label="Next story" className="wrap pt-16 md:pt-24">
+        <Link href={`/stories/${next.slug}`} className="group flex flex-wrap items-end justify-between gap-4 border-y border-line py-8">
+          <span>
+            <span className="t-small text-ink-2 block">Next story</span>
+            <span className="t-h4 block mt-2 group-hover:opacity-60 transition-opacity">{next.title}</span>
+          </span>
+          <span className="t-label link-u">{next.officerRank} {next.officerName}</span>
+        </Link>
+      </nav>
 
       {/* CTA */}
       <section className="wrap section">

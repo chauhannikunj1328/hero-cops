@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getStories } from "@/lib/stories";
-import { ImageSlot, IndexRow, SectionTitle, ServiceRow, StatusTag } from "@/components/blocks";
-import { CarSeatIllustration } from "@/components/CarSeatIllustration";
+import { ImageSlot, IndexRow, SectionTitle, ServiceRow } from "@/components/blocks";
+import { StoryCard, SubmitCard } from "@/components/StoryCard";
+import { StoryArt } from "@/components/StoryArt";
 
 /*
   Section order follows the OrngLab template:
@@ -71,7 +72,7 @@ const faqs = [
 ];
 
 export default function Home() {
-  const [featured] = getStories();
+  const stories = getStories();
 
   return (
     <>
@@ -83,7 +84,7 @@ export default function Home() {
       {/* About */}
       <section id="about" className="wrap pt-12 md:pt-20 grid lg:grid-cols-[690px_1fr] gap-10 lg:gap-[30px]">
         <ImageSlot label="Image: department-supplied photo" ratio="4 / 3.4" className="rounded-none">
-          <CarSeatIllustration className="absolute inset-0 w-full h-full" />
+          <StoryArt kind="car" className="absolute inset-0 w-full h-full" />
         </ImageSlot>
         <div className="grid sm:grid-cols-[auto_1fr] gap-6 sm:gap-10 lg:pl-[30px] content-start">
           <h2 className="t-h4 whitespace-nowrap">About Hero Cops</h2>
@@ -117,38 +118,14 @@ export default function Home() {
       {/* Latest works > Verified stories */}
       <section id="stories" className="wrap pb-[72px] md:pb-[120px] scroll-mt-20">
         <SectionTitle>Verified stories</SectionTitle>
-        <ul className="mt-8 md:mt-12 grid md:grid-cols-2 gap-x-[30px] gap-y-12">
-          {featured && (
-            <li>
-              <Link href={`/stories/${featured.slug}`} className="group block">
-                <ImageSlot label="Temporary placeholder image" ratio="4 / 3">
-                  <CarSeatIllustration className="absolute inset-0 w-full h-full group-hover:scale-[1.02] transition-transform duration-500" />
-                </ImageSlot>
-                <div className="mt-5 flex flex-wrap items-start justify-between gap-3">
-                  <h3 className="t-h5 max-w-md">{featured.title}</h3>
-                  <StatusTag tone="pending">{featured.verification.status}</StatusTag>
-                </div>
-                <ul className="mt-3 flex flex-wrap gap-2">
-                  {[featured.category, `${featured.city}, ${featured.state}`, featured.incidentDate].map((t) => (
-                    <li key={t} className="t-small text-ink-2 rounded-full border border-line px-3 py-1">{t}</li>
-                  ))}
-                </ul>
-              </Link>
+        <ul className="mt-8 md:mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-x-[30px] gap-y-14">
+          {stories.map((s) => (
+            <li key={s.slug}>
+              <StoryCard story={s} />
             </li>
-          )}
+          ))}
           <li>
-            <Link href="/submit" className="group block">
-              <div className="ph grid place-items-center text-center px-8" style={{ aspectRatio: "4 / 3" }}>
-                <div>
-                  <p className="t-h3 max-w-sm mx-auto">The next story could come from your department.</p>
-                  <span className="btn mt-6">Submit a story</span>
-                </div>
-              </div>
-              <div className="mt-5">
-                <h3 className="t-h5">More stories are in verification</h3>
-                <p className="t-body mt-2">They appear here once a department confirms them.</p>
-              </div>
-            </Link>
+            <SubmitCard />
           </li>
         </ul>
       </section>
